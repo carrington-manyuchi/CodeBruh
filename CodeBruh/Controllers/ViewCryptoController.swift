@@ -81,7 +81,6 @@ class ViewCryptoController: UIViewController {
     }()
     
     
-    
     //MARK: - Lifecycle
     init(_ viewModel: ViewCryptoControllerViewModel) {
         self.viewModel = viewModel
@@ -123,10 +122,6 @@ class ViewCryptoController: UIViewController {
     }
     
     private func setupConstraints() {
-        
-//        let height = contentView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
-//        height.priority = UILayoutPriority(1)
-//        height.isActive = true
         
         let scrollViewConstraints = [
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),

@@ -48,15 +48,24 @@ class CoinCell: UITableViewCell {
     public func configure(with coin: Coin) {
         self.coin = coin
         self.coinName.text = coin.name
-        let imageData = try? Data(contentsOf: self.coin.logoURL!)
-        if let imageData {
-            DispatchQueue.main.async { [weak self] in
-                self?.coinLogo.image = UIImage(data: imageData)
+        
+        DispatchQueue.global().async { [weak self] in
+            if let logoURL = self?.coin.logoURL,
+               let imageData = try? Data(contentsOf: logoURL),
+               let logoImage = UIImage(data: imageData) {
+                DispatchQueue.main.async {
+                    self?.coinLogo.image = logoImage
+                }
             }
         }
     }
     
     // TODO: - PrepareForReuse
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.coinLogo.image = nil
+        self.coinName.text = nil
+    }
     
     
     //MARK: - UI Setup

@@ -14,5 +14,5 @@ struct Constants {
     static let scheme = "https"
     static let baseURL = "https://pro.coinmarketcap.com/"
     static let port: Int? = nil
-    static let apiKey = ""
+    //static let apiKey = "
 }

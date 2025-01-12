@@ -10,7 +10,7 @@ import UIKit
 class HomeController: UIViewController {
     
     //MARK: - Variables
-    private let coins: [Coin] = Coin.getMockArray()
+    private let viewModel: HomeControllerViewModel
     
     //MARK: - UI Components
     private let tableView: UITableView = {
@@ -22,11 +22,48 @@ class HomeController: UIViewController {
     }()
     
     //MARK: - Lifecycle
+    
+    init(_ viewModel: HomeControllerViewModel = HomeControllerViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        
+        self.viewModel.onCoinsUpdated = { [weak self]  in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+        
+//        self.viewModel.onErrorMessage = { [weak self] error in
+//            DispatchQueue.main.async {
+//                let alert = UIAlertController(title: nil, message: "\(error)", preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel))
+//                switch error {
+//                case .serverError(_):
+//                    alert.title = "Server Error"
+//                   // alert.message = serverError.errorMessage
+//                case .unknownError(_):
+//                    alert.title = "Error fetching coins"
+//                    alert.message = "Please try again later"
+//                case .decodingError(_):
+//                    alert.title = "Decoding Error"
+//                    alert.message = "Error decoding JSON"
+//                }
+//                
+//                self?.present(alert, animated: true, completion: nil)
+//            }
+//            
+//        }
         
         self.view.backgroundColor = .blue
     }
@@ -54,14 +91,14 @@ class HomeController: UIViewController {
 //MARK: - Tableview Functions
 extension HomeController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        self.coins.count
+        self.viewModel.coins.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoinCell.identifier, for: indexPath) as? CoinCell else {
             fatalError("Unable to dequeue Coincell in HomeController")
         }
-        let coin = self.coins[indexPath.row]
+        let coin = self.viewModel.coins[indexPath.row]
         cell.configure(with: coin)
         return cell
     }
@@ -72,7 +109,7 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: true)
-        let coin = self.coins[indexPath.row]
+        let coin = self.viewModel.coins[indexPath.row]
         let vm = ViewCryptoControllerViewModel(coin: coin)
         let vc = ViewCryptoController(vm)
         self.navigationController?.pushViewController(vc, animated: true)
