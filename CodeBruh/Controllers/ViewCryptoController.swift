@@ -10,7 +10,7 @@ import UIKit
 class ViewCryptoController: UIViewController {
     
     //MARK: - Variables
-    private let coin: Coin
+    let viewModel: ViewCryptoControllerViewModel
 
     //MARK: - UI Components
     private let scrollView: UIScrollView = {
@@ -38,7 +38,6 @@ class ViewCryptoController: UIViewController {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .center
-       // label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.text = "Error"
         return label
@@ -48,7 +47,6 @@ class ViewCryptoController: UIViewController {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .center
-       // label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.text = "Error"
         return label
@@ -58,7 +56,6 @@ class ViewCryptoController: UIViewController {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .center
-       // label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.text = "Error"
         return label
@@ -68,7 +65,6 @@ class ViewCryptoController: UIViewController {
         let label = UILabel()
         label.textColor = .label
         label.textAlignment = .center
-       // label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.numberOfLines = 0
         return label
@@ -87,8 +83,8 @@ class ViewCryptoController: UIViewController {
     
     
     //MARK: - Lifecycle
-    init(coin: Coin) {
-        self.coin = coin
+    init(_ viewModel: ViewCryptoControllerViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -99,16 +95,20 @@ class ViewCryptoController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
-        self.view.backgroundColor = .gray
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
+        self.navigationItem.title = self.viewModel.coin.name
         
-        self.rankLabel.text = self.coin.cmc_rank.description
-        self.priceLabel.text = self.coin.quote.CAD.price.description
-        self.marketCapLabel.text = self.coin.quote.CAD.market_cap.description
-        self.maxSupplyLabel.text = self.coin.max_supply?.description
+        self.rankLabel.text = self.viewModel.rankLabel
+        self.priceLabel.text = self.viewModel.priceLabel
+        self.marketCapLabel.text = self.viewModel.marketCapLabel
+        self.maxSupplyLabel.text = self.viewModel.maxSupplyLabel
 
-        // Do any additional setup after loading the view.
+        self.viewModel.onImageLoaded = { [weak self] logoImage in
+            DispatchQueue.main.async {
+                    self?.coinLogo.image = logoImage
+            }
+        }
     }
     
     //MARK: - UI Setup
@@ -146,7 +146,8 @@ class ViewCryptoController: UIViewController {
             coinLogo.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50),
             coinLogo.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             coinLogo.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            coinLogo.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+            coinLogo.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            coinLogo.heightAnchor.constraint(equalToConstant: 200),
         ]
         
         let vStackConstraints = [

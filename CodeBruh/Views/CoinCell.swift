@@ -19,10 +19,9 @@ class CoinCell: UITableViewCell {
     private let coinLogo: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFit
         iv.image = UIImage(systemName: "questionmark")
         iv.tintColor = .black
-        iv.backgroundColor = .systemBlue
         return iv
     }()
     
@@ -48,8 +47,13 @@ class CoinCell: UITableViewCell {
     
     public func configure(with coin: Coin) {
         self.coin = coin
-        self.coinLogo.image = UIImage(systemName: coin.name)
         self.coinName.text = coin.name
+        let imageData = try? Data(contentsOf: self.coin.logoURL!)
+        if let imageData {
+            DispatchQueue.main.async { [weak self] in
+                self?.coinLogo.image = UIImage(data: imageData)
+            }
+        }
     }
     
     // TODO: - PrepareForReuse

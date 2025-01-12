@@ -13,15 +13,19 @@ struct Coin {
     let max_supply: Int?
     let cmc_rank: Int
     let quote: Quote
-}
-
-struct Quote {
-    let CAD: CAD
-}
-
-struct CAD {
-    let price: Double
-    let market_cap: Double
+    
+    var logoURL: URL? {
+        return URL(string: "https://s2.coinmarketcap.com/static/img/coins/200x200/1.png")
+    }
+    
+    struct Quote {
+        let CAD: CAD
+    }
+    
+    struct CAD {
+        let price: Double
+        let market_cap: Double
+    }
 }
 
 extension Coin {
